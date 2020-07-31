@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Store App Review</string>
+
+    <style name="reviews">Отзывы</style>
+
+    <style name="statistics">Статистика</style>
 </resources>
