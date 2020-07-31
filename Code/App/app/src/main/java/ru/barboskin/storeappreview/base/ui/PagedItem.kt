@@ -47,5 +47,7 @@ fun BaseAdapter<ListItem>.startLoadMore() {
 }
 
 fun BaseAdapter<ListItem>.getNewPagedItems(newItems: List<ListItem>): List<ListItem> {
-    return currentList.filter { it !is PagedItem } + newItems + listOf(PagedItem(PagedState.IDLE))
+    return currentList.filterNot { it is PagedItem || it is ShimmerItem } + newItems + listOf(
+        PagedItem(PagedState.IDLE)
+    )
 }

@@ -23,6 +23,7 @@ class ReviewAdapter(
         return when (viewType) {
             R.layout.item_review -> ReviewViewHolder(view, reviewClickListener)
             R.layout.item_paged_list -> PagedItemViewHolder(view, loadMoreCallback)
+            R.layout.item_review_shimmer -> BaseViewHolder(view)
             else -> error("Unsupported viewType $viewType")
         } as BaseViewHolder<ListItem>
     }
