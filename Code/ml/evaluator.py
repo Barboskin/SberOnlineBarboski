@@ -1,0 +1,209 @@
+# metrics for fast experements and model selection
+# it's work for sklearn api and keras(backend-tensorfow)
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from keras.utils import np_utils
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import classification_report
+from sklearn.metrics import cohen_kappa_score
+from sklearn.metrics import zero_one_loss
+from sklearn.metrics import explained_variance_score
+from sklearn.metrics import roc_curve
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import f1_score
+from sklearn.metrics import auc
+import seaborn as sns
+
+
+class Evaluator(object):
+    '''
+    Class containing functions to calculate different metrics (Precision, Recall, ROC AUC etc...)
+    '''
+
+    def __init__(self):
+        '''
+        Initialisation of the metrics class
+        '''
+
+    @classmethod
+    def roc_auc_curve(self, model, x, y, labels):
+        '''
+        Function to plot the ROC AUC curves for multiclass classification.
+        Correct for Machine learning models and Neural Networks.
+        @param model: (model) classification model
+        @param x: (list) validation sample
+        @param y: (list int) validation sample label
+        '''
+        # generate a no-skill prediction (majority class)
+        ns_probs = [0 for _ in range(len(y.reshape(-1, 1)))]
+
+        # predict call probabilities
+        lr_probs = model.predict(x)
+
+        plt.figure(figsize=(10, 8))
+
+        dummy_y = np_utils.to_categorical(y)
+        # ns_auc = roc_auc_score(valid_y, dummy_ns, average="weighted", multi_class="ovr")
+
+        lr_auc_multi = []
+        for i in enumerate(labels):
+            lr_auc_multi.append(round(roc_auc_score(dummy_y[:, i[0]], lr_probs[:, i[0]], average="weighted"), 3))
+            print(f"ROC AUC class {i[1]}: {lr_auc_multi[-1]}")
+            lr_auc = roc_auc_score(dummy_y, lr_probs, average="weighted", multi_class="ovr")
+
+        ns_fpr, ns_tpr = [i / 10 for i in list(range(0, 11, 1))], [i / 10 for i in
+                                                                   list(range(0, 11, 1))]  # f(range(0, 0.1, 1))
+        plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
+        for i in range(lr_probs.shape[1]):
+            lr_fpr, lr_tpr, _ = roc_curve(dummy_y[:, i], lr_probs[:, i])
+            # plot the roc curve for the model
+            plt.plot(lr_fpr, lr_tpr, label=f'Class {labels[i]} (area {lr_auc_multi[i]})')
+            # axis labels
+            plt.xlabel('False Positive Rate')
+            plt.ylabel('True Positive Rate')
+            # show the grid
+            plt.grid(True)
+            # show the legend
+            plt.legend()
+
+        print('\nROC AUC=%.3f \n' % (lr_auc))
+        plt.show()
+
+    @classmethod
+    def confusion_matrix(self, model, y, x, labels):
+        '''
+        Compute the confusion matrix for multiclass classification.
+        Correct for Machine learning models and Neural Networks.
+        @param model: (model) classification model
+        @param x: (list) validation sample
+        @param y: (list int) validation sample label
+
+        '''
+        # multiclass confusion matrix
+        dummy_y = np_utils.to_categorical(y)
+        mcm = multilabel_confusion_matrix(dummy_y, np_utils.to_categorical(model.predict(x).argmax(-1)))
+        df_mcm = pd.DataFrame()
+        for i in zip(mcm, labels):  # compute confusion matrix for each class
+            mcm = pd.DataFrame(data=i[0], columns=['Predicted Negative', "Predicted Positive"],
+                               index=['Actual Negative', 'Actual Positive'])
+            df_mcm = df_mcm.append(mcm)
+            print("\nConfusion matrix for classe: %s \n" % (i[1]))
+            print(mcm)
+            print("\n")
+        return df_mcm
+
+    @classmethod
+    def precision_recall_curve(self, model, x, y, labels):
+        '''
+        Function to plot the recall precision curves for multiclass classification.
+        Correct for Machine learning models and Neural Networks.
+        @param model: (model) classification model
+        @param x: (list) validation sample
+        @param y: (list int) validation sample label
+        '''
+        # predict probabilities
+        lr_probs = model.predict(x)
+
+        print("\n")
+        plt.figure(figsize=(10, 8))
+
+        dummy_y = np_utils.to_categorical(y)
+        dummy_lr = np_utils.to_categorical(lr_probs.argmax(-1))
+        for i in enumerate(labels):
+            precision, recall, thresholds = precision_recall_curve(dummy_y[:, i[0]], lr_probs[:, i[0]])
+            # calculate precision-recall AUC
+            lr_f1 = f1_score(dummy_y[:, i[0]], dummy_lr[:, i[0]])
+            lr_auc = auc(recall, precision)
+            # summarize scores
+            print('Model class: %s --> f1-score=%.3f AUC=%.3f' % (i[1], lr_f1, lr_auc))
+            plt.plot(recall, precision, label='Class %s' % (i[1]))
+            no_skill = len(y[y >= 1]) / len(y)
+            plt.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
+        # plot the precision-recall curves
+        print("\n")
+
+        # axis labels
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        # show the legend
+        plt.legend()
+        # show the grid
+        plt.grid(True)
+        # show the plot
+        plt.show()
+
+    @classmethod
+    def plot_confusion_matrix(self, cm, classes, normalized=True, cmap='bone'):
+        '''
+        Function to generate an heatmap of the confusion matrix
+        @param cm: (matrix) confusion matrix
+        @param classes: (list) list containing labels of the classes
+        @param normalised: (bool) determined if the confusion matrix need to be normalized
+        @param cmap: (str) color for the confusion matrix
+        '''
+        plt.figure(figsize=[10, 8])
+        norm_cm = cm
+        if normalized:
+            norm_cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+            sns.heatmap(norm_cm, annot=cm, fmt='g', xticklabels=classes, yticklabels=classes, cmap=cmap)
+            # plt.savefig('confusion-matrix.png')
+
+    @classmethod
+    def plot_history(self, history):
+        '''
+        Function to plot the learning curves of a neural network models
+        @param history: metrics of a neural network
+        '''
+        plt.figure(figsize=(15, 10))
+        plt.subplot(221)
+        # Plot training & validation accuracy values
+        plt.plot(history.history['accuracy'])
+        plt.plot(history.history['val_accuracy'])
+        plt.title('Model accuracy')
+        plt.ylabel('Accuracy')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Test'], loc='upper left')
+        plt.grid(True)
+
+        # Plot training & validation loss values
+        plt.subplot(222)
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['val_loss'])
+        plt.title('Model loss')
+        plt.ylabel('Loss')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Test'], loc='upper left')
+        plt.grid(True)
+        plt.show()
+
+    @classmethod
+    def metrics_deep_learning(self, model, history, x, y, labels):
+        '''
+        Function to plot the different metrics for the deep learning algorithms.
+        @param model: (tensorflow.python.keras.engine.sequential.Sequential) deep learning model
+        @param history: (tensorflow.python.keras.callbacks.History) history of the training model
+        @param x: (numpy.ndarray) x data
+        @param y: (numpy.ndarray) target data
+        @param labels: (list) list containing the labels in str
+        '''
+        self.plot_history(history)
+        print(
+            f"\nThe balanced accuracy is : {round(100 * balanced_accuracy_score(y, model.predict(x).argmax(axis=-1)), 2)}%\n")
+        print(f"\nThe Zero-one Loss is : {round(100 * zero_one_loss(y, model.predict(x).argmax(axis=-1)), 2)}%\n")
+        print(
+            f"\nExplained variance score: {round(explained_variance_score(y, model.predict(x).argmax(axis=-1)), 3)}\n")
+        self.roc_auc_curve(model, x, y, labels)
+        self.precision_recall_curve(model, x, y, labels)
+
+        print(f"\nCohen's kappa: {round(100 * cohen_kappa_score(y, model.predict(x).argmax(axis=-1)), 2)}%\n")
+        # matrices = self.confusion_matrix(model, y, x, labels)
+        cm = confusion_matrix(y, model.predict(x).argmax(axis=-1))
+
+        print(classification_report(y, model.predict(x).argmax(axis=-1), target_names=labels))
+
+        print("\nConfusion Matrix\n")
+        self.plot_confusion_matrix(cm, labels)
