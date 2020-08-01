@@ -11,9 +11,10 @@
         android:id="@+id/platformIcon"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:transitionName="@string/platform_icon_transition_name"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:src="@drawable/ic_apple" />
 
     <TextView
@@ -22,6 +23,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toStartOf="@id/negativeIcon"
         app:layout_constraintStart_toEndOf="@id/platformIcon"
         app:layout_constraintTop_toTopOf="parent"

@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">Store App Review</string>
 
-    <style name="reviews">Отзывы</style>
+    <string name="teams">Команды</string>
+    <string name="reviews">Отзывы</string>
+    <string name="statistics">Статистика</string>
+    <string name="change_button">Изменить</string>
 
-    <style name="statistics">Статистика</style>
+    <string name="platform_icon_transition_name">platform_icon</string>
 </resources>

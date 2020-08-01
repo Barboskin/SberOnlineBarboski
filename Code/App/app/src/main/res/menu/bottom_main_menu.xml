@@ -3,9 +3,9 @@
     <item
         android:id="@+id/action_reviews"
         android:icon="@drawable/ic_review"
-        android:title="Отзывы" />
+        android:title="@string/reviews" />
     <item
         android:id="@+id/action_statistics"
         android:icon="@drawable/ic_statistics"
-        android:title="Статистика" />
+        android:title="@string/statistics" />
 </menu>

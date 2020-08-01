@@ -3,20 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:shimmer_duration="@integer/shimmer_duration"
-    android:padding="16dp">
+    android:padding="16dp"
+    app:shimmer_duration="@integer/shimmer_duration">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <View
+            android:id="@+id/iconStub"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_icon_shimmer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
             android:id="@+id/titleStub"
             android:layout_width="148dp"
             android:layout_height="16dp"
+            android:layout_marginStart="16dp"
             android:background="@color/light_grey"
             app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iconStub"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
@@ -26,7 +36,7 @@
             android:layout_marginTop="4dp"
             android:background="@color/light_grey"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/titleStub"
             app:layout_constraintTop_toBottomOf="@id/titleStub" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

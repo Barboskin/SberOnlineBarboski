@@ -2,6 +2,7 @@ package ru.barboskin.storeappreview.reviews.list
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.schedulers.Schedulers.io
@@ -13,6 +14,7 @@ import ru.barboskin.storeappreview.domain.model.TeamItem
 import ru.barboskin.storeappreview.ext.*
 import ru.barboskin.storeappreview.reviews.details.ReviewDetailsActivity
 import java.util.concurrent.TimeUnit
+import kotlin.LazyThreadSafetyMode.NONE
 
 class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
 
@@ -21,14 +23,12 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
         private const val EXTRA_TEAM_ITEM = "EXTRA_TEAM_ITEM"
 
         fun start(activity: Activity, teamItem: TeamItem) {
-            activity.startActivity<ReviewsListActivity> {
-                putExtra(EXTRA_TEAM_ITEM, teamItem)
-            }
+            activity.startActivity<ReviewsListActivity> { putExtra(EXTRA_TEAM_ITEM, teamItem) }
         }
     }
 
-    private val repository by lazy { getComponent().reviewsRepository }
-    private val teamItem by lazy { intent.getSerializableExtra(EXTRA_TEAM_ITEM) as TeamItem }
+    private val repository by lazy(NONE) { getComponent().reviewsRepository }
+    private val teamItem by lazy(NONE) { intent.getParcelableExtra(EXTRA_TEAM_ITEM) as TeamItem }
     private lateinit var adapter: ReviewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +52,8 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
         updateReviewList(0)
     }
 
-    private fun onReviewClick(reviewItem: ReviewItem) {
-        ReviewDetailsActivity.start(this)
+    private fun onReviewClick(sharedView: View, reviewItem: ReviewItem) {
+        ReviewDetailsActivity.start(this, sharedView, reviewItem)
     }
 
     private fun onLoadMore(offset: Int) {

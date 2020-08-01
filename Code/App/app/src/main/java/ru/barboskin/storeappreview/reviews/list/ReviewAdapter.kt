@@ -10,19 +10,22 @@ import ru.barboskin.storeappreview.base.ui.items.DescriptionViewHolder
 import ru.barboskin.storeappreview.base.ui.items.ListItem
 import ru.barboskin.storeappreview.base.ui.items.PagedItemViewHolder
 import ru.barboskin.storeappreview.domain.model.ReviewItem
-import java.text.SimpleDateFormat
-import java.util.*
-
-private val dateFormat = SimpleDateFormat("d MMMM y", Locale.getDefault())
+import ru.barboskin.storeappreview.ext.formatAsString
+import ru.barboskin.storeappreview.reviews.PlatformIconProvider
 
 class ReviewAdapter(
-    private val reviewClickListener: (ReviewItem) -> Unit,
-    private val loadMoreCallback: (Int) -> Unit
+    private val reviewClickListener: (View, ReviewItem) -> Unit,
+    private val loadMoreCallback: (Int) -> Unit,
+    private val platformIconProvider: PlatformIconProvider = PlatformIconProvider()
 ) : BaseAdapter<ListItem>() {
 
     override fun createViewHolder(viewType: Int, view: View): BaseViewHolder<ListItem> {
         return when (viewType) {
-            R.layout.item_review -> ReviewViewHolder(view, reviewClickListener)
+            R.layout.item_review -> ReviewViewHolder(
+                view,
+                reviewClickListener,
+                platformIconProvider
+            )
             R.layout.item_paged_list -> PagedItemViewHolder(view, loadMoreCallback)
             R.layout.item_review_shimmer -> BaseViewHolder(view)
             R.layout.item_description -> DescriptionViewHolder(view)
@@ -33,20 +36,21 @@ class ReviewAdapter(
 
 class ReviewViewHolder(
     view: View,
-    private val reviewClickListener: (ReviewItem) -> Unit
+    private val reviewClickListener: (View, ReviewItem) -> Unit,
+    private val platformIconProvider: PlatformIconProvider
 ) : BaseViewHolder<ReviewItem>(view) {
 
     init {
-        containerView.setOnClickListener { item?.let(reviewClickListener) }
+        containerView.setOnClickListener { item?.let { reviewClickListener(platformIcon, it) } }
     }
 
     override fun bind(item: ReviewItem) {
         super.bind(item)
         with(item) {
             titleView.text = title
-            dateView.text = dateFormat.format(date)
+            dateView.text = date.formatAsString()
             negativeIcon.isVisible = isNegative
-            platformIcon.setImageResource(if (isApple) R.drawable.ic_apple else R.drawable.ic_android)
+            platformIcon.setImageResource(platformIconProvider(isApple))
         }
     }
 }

@@ -33,12 +33,12 @@ class ReviewsApiStub : ReviewsApi {
         return Single.just(
             List(size) {
                 ReviewItem(
-                    title = "Review ${it + offset}",
+                    title = "Заголовок отзыва ${it + offset}",
                     id = (it + offset).toString(),
                     date = Date(),
                     starCount = it % 5,
                     teams = listOf(team),
-                    desc = "Description on review ${it + offset}",
+                    desc = "Описание того, как все очень плохо, как все бесит и того, как надо сделать, чтобы стало лучше, гораздо лучше, да хотя бы в миллион раз лучше. Спасибо ${it + offset}",
                     isNegative = it % 2 == 0,
                     isApple = it % 3 == 0
                 )
