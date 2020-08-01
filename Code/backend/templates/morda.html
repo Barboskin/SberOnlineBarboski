@@ -5,8 +5,55 @@
     <title>Морда</title>
 </head>
 <body>
-    <form>
+    {% set is_edit = action == 'edit' %}
+    {% set is_create = action == 'create' %}
+    <h1>{% if is_create %}Новый отзыв:{% elif is_edit %}Редактировать отзыв:{% endif %}</h1>
+    <form method="POST">
+        <input type="hidden" id="action" name="action" value="{{ action }}">
+        <p><label for="review_title">Тема:</label>
+        <input type="text" id="review_title" name="review_title"
+                  value="{% if is_edit %}{{ review_data['review_title'] }}{% endif %}"
+                  {% if is_edit %} readonly {% endif %}
+                  placeholder="Не работает"</p>
+        <p><label for="review_text">Отзыв:</label><br/>
+        <textarea id="review_text" name="review_text" placeholder="Баг в приложении"
+                     {% if is_edit %} readonly {% endif %}>
+            {% if is_edit %}{{ review_data['review_text'] }}{% endif %}
+        </textarea></p>
+        <p><label for="rate">Оценка:</label>
+        <input type="number" id="rate" name="rate" min="1" max="5"
+                  value="{% if is_edit %}{{ review_data['rate'] }}{% endif %}"
+                  {% if is_edit %} readonly {% endif %}></p>
+        <p>Платформа:
+          <div>
+              <label for="platform_google">Android</label>
+              <input type="radio" id="platform_google" name="platform" value="False"
+                     {% if is_edit %} {% if not review_data['platform'] %} checked {% else %} disabled {% endif %} {% endif %}>
+              <label for="platform_apple">iOS</label>
+              <input type="radio" id="platform_apple" name="platform" value="True"
+                     {% if is_edit %} {% if review_data['platform'] %} checked {% else %} disabled {% endif %} {% endif %} required>
+          </div></p>
+        {% if with_pretrain %}
+            <h2>Обучение:</h2>
+                <p>Интонация отзыва:</p>
+                  <div>
+                    <label for="positive_intonation">Позитив</label>
+                    <input type="radio" id="positive_intonation" name="intonation" value="True"
+                           {% if is_edit and review_data['intonation'] %} checked {% endif %}>
 
+                    <label for="negative_intonation">Негатив</label>
+                    <input type="radio" id="negative_intonation" name="intonation" value="False"
+                           {% if is_edit and not review_data['intonation'] %} checked {% endif %} required>
+                  </div>
+                <p>Пренадлежность к команде:</p>
+                {% for command in commands %}
+                    {% set command_id="command_{}_estimate".format(command['id']) %}
+                    <p><label for="{{ command_id }}">{{ command['name'] }}</label>
+                    <input type="checkbox" id="{{ command_id }}" name="{{ command_id }}" value="100"
+                     {% if is_edit and review_data[command_id] > 50 %} checked {% endif %}></p>
+                {% endfor %}
+        {% endif %}
+        <input type="submit" name="submit" value="Отправить">
     </form>
 </body>
 </html>
