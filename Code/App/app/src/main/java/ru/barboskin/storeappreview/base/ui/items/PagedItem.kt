@@ -7,6 +7,8 @@ import ru.barboskin.storeappreview.R
 import ru.barboskin.storeappreview.base.ui.BaseAdapter
 import ru.barboskin.storeappreview.base.ui.BaseViewHolder
 
+private const val DEFAULT_LIMIT = 50
+
 class PagedItem(
     val state: PagedState
 ) : ListItem {
@@ -49,7 +51,7 @@ fun BaseAdapter<ListItem>.startLoadMore() {
 }
 
 fun BaseAdapter<ListItem>.getNewPagedItems(newItems: List<ListItem>): List<ListItem> {
-    return currentList.filterNot { it is PagedItem || it is ShimmerItem } + newItems + listOf(
-        PagedItem(PagedState.IDLE)
+    return currentList.filterNot { it is PagedItem || it is ShimmerItem } + newItems + listOfNotNull(
+        if (newItems.size >= DEFAULT_LIMIT) PagedItem(PagedState.IDLE) else null
     )
 }
