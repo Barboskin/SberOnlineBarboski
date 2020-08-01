@@ -7,9 +7,9 @@ import ru.barboskin.storeappreview.domain.model.TeamItem
 
 interface ReviewsApi {
 
-    @GET
+    @GET("fds")
     fun teams(): Single<List<TeamItem>>
 
-    @GET
+    @GET("fds")
     fun reviews(team: String, offset: Int): Single<List<ReviewItem>>
 }

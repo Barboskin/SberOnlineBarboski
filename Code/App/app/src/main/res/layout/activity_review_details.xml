@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
@@ -115,14 +116,14 @@
             <TextView
                 android:id="@+id/changeTeamsButton"
                 style="@style/ActionButton"
-                android:paddingTop="8dp"
-                android:paddingStart="8dp"
-                android:paddingBottom="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:text="@string/change_button"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/teamsListTitleView"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/teamsListTitleView" />
 
             <com.google.android.flexbox.FlexboxLayout
@@ -139,5 +140,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/notifyButton"
+        style="@style/PrimaryButton"
+        android:layout_gravity="center|bottom"
+        android:text="@string/notify_teams" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

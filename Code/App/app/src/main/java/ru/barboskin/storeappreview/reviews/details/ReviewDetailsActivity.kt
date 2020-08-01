@@ -8,12 +8,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
+import com.google.android.material.snackbar.Snackbar
+import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
+import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.activity_review_details.*
 import ru.barboskin.storeappreview.R
+import ru.barboskin.storeappreview.base.network.SlackMessage
 import ru.barboskin.storeappreview.domain.model.ReviewItem
-import ru.barboskin.storeappreview.ext.formatAsString
-import ru.barboskin.storeappreview.ext.initBackNavigation
-import ru.barboskin.storeappreview.ext.startActivity
+import ru.barboskin.storeappreview.ext.*
 import ru.barboskin.storeappreview.reviews.PlatformIconProvider
 import ru.barboskin.storeappreview.reviews.TeamChipFactory
 import ru.barboskin.storeappreview.reviews.edit.EXTRA_NEW_TEAMS
@@ -42,6 +45,7 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
 
     private val reviewItem by lazy(NONE) { intent.getParcelableExtra(EXTRA_REVIEW_ITEM) as ReviewItem }
     private val teamChipFactory by lazy(NONE) { TeamChipFactory() }
+    private val slackApi by lazy(NONE) { getComponent().slackApi }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +72,7 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
             showTeams(teams)
             changeTeamsButton.setOnClickListener { onChangeTeamsClick() }
         }
+        notifyButton.setOnClickListener { notifyTeams() }
     }
 
     private fun showTeams(teams: List<String>) {
@@ -79,5 +84,25 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
 
     private fun onChangeTeamsClick() {
         EditTeamsActivity.startForResult(this, reviewItem, EDIT_TEAMS_REQUEST_CODE)
+    }
+
+    private fun notifyTeams() {
+        slackApi.sendMessage(SlackMessage(createMessage()))
+            .subscribeOn(io())
+            .observeOn(mainThread())
+            .subscribeBy(::showSnackAppOnSuccessSendMessage)
+            .disposeOnDestroy(this)
+    }
+
+    private fun createMessage(): String {
+        return with(reviewItem) {
+            val platform = if (isApple) "iOS" else "Android"
+            val mark = "$starCount/5"
+            "*$platform $mark*\n*$title* \n\n $desc"
+        }
+    }
+
+    private fun showSnackAppOnSuccessSendMessage() {
+        Snackbar.make(content, R.string.send_messages_snack, LENGTH_LONG).show()
     }
 }
