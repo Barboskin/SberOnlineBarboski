@@ -11,6 +11,7 @@ data class ReviewItem(
     val starCount: Int,
     val teams: List<String>,
     val isNegative: Boolean,
+    val isApple: Boolean,
     override val id: String
 ) : ListItem {
     override val viewType: Int = R.layout.item_review

@@ -46,6 +46,7 @@ class ReviewViewHolder(
             titleView.text = title
             dateView.text = dateFormat.format(date)
             negativeIcon.isVisible = isNegative
+            platformIcon.setImageResource(if (isApple) R.drawable.ic_apple else R.drawable.ic_android)
         }
     }
 }

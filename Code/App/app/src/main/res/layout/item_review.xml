@@ -7,13 +7,23 @@
     android:background="?android:selectableItemBackground"
     android:padding="16dp">
 
+    <ImageView
+        android:id="@+id/platformIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:src="@drawable/ic_apple" />
+
     <TextView
         android:id="@+id/titleView"
         style="@style/TextAppearance.AppCompat.ItemTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         app:layout_constraintEnd_toStartOf="@id/negativeIcon"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/platformIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Все очень плохо" />
 
@@ -23,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         app:layout_constraintEnd_toStartOf="@id/negativeIcon"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/titleView"
         app:layout_constraintTop_toBottomOf="@id/titleView"
         tools:text="24 июля 2020 года" />
 

@@ -39,7 +39,8 @@ class ReviewsApiStub : ReviewsApi {
                     starCount = it % 5,
                     teams = listOf(team),
                     desc = "Description on review ${it + offset}",
-                    isNegative = it % 2 == 0
+                    isNegative = it % 2 == 0,
+                    isApple = it % 3 == 0
                 )
             }
         )
