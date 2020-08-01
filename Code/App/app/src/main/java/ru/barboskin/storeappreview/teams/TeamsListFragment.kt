@@ -3,18 +3,17 @@ package ru.barboskin.storeappreview.teams
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.frament_teams_list.*
 import ru.barboskin.storeappreview.R
-import ru.barboskin.storeappreview.base.ui.items.ListItem
-import ru.barboskin.storeappreview.base.ui.items.ShimmerItem
+import ru.barboskin.storeappreview.base.ui.items.*
 import ru.barboskin.storeappreview.domain.model.TeamItem
 import ru.barboskin.storeappreview.ext.disposeOnDestroy
 import ru.barboskin.storeappreview.ext.getComponent
 import ru.barboskin.storeappreview.ext.subscribeBy
 import ru.barboskin.storeappreview.reviews.list.ReviewsListActivity
-import java.util.concurrent.TimeUnit
 import kotlin.LazyThreadSafetyMode.NONE
 
 class TeamsListFragment : Fragment(R.layout.frament_teams_list) {
@@ -24,19 +23,24 @@ class TeamsListFragment : Fragment(R.layout.frament_teams_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = TeamsAdapter(::onTeamClick)
+        adapter = TeamsAdapter(::onTeamClick, ::onRepeatLoadClick)
         recycler.adapter = adapter
-        loadCategories()
+        adapter.submitList(createShimmers())
+        loadTeams()
     }
 
-    private fun loadCategories() {
-        adapter.submitList(createShimmers())
-        repository.getTeams()
+    private fun loadTeams() {
+        (repository.getTeams() as Single<List<ListItem>>)
             .subscribeOn(io())
-            .delay(2, TimeUnit.SECONDS)
             .observeOn(mainThread())
+            .onErrorReturn { listOf<ListItem>(ErrorItem(ErrorState.ERROR)) }
             .subscribeBy(adapter::submitList)
             .disposeOnDestroy(viewLifecycleOwner)
+    }
+
+    private fun onRepeatLoadClick() {
+        adapter.startRepeatLoad()
+        loadTeams()
     }
 
     private fun onTeamClick(teamItem: TeamItem) {

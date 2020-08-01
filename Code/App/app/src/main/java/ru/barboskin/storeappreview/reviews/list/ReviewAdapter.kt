@@ -7,6 +7,7 @@ import ru.barboskin.storeappreview.R
 import ru.barboskin.storeappreview.base.ui.BaseAdapter
 import ru.barboskin.storeappreview.base.ui.BaseViewHolder
 import ru.barboskin.storeappreview.base.ui.items.DescriptionViewHolder
+import ru.barboskin.storeappreview.base.ui.items.ErrorItemViewHolder
 import ru.barboskin.storeappreview.base.ui.items.ListItem
 import ru.barboskin.storeappreview.base.ui.items.PagedItemViewHolder
 import ru.barboskin.storeappreview.domain.model.ReviewItem
@@ -16,6 +17,7 @@ import ru.barboskin.storeappreview.reviews.PlatformIconProvider
 class ReviewAdapter(
     private val reviewClickListener: (View, ReviewItem) -> Unit,
     private val loadMoreCallback: (Int) -> Unit,
+    private val onRepeatClick: () -> Unit,
     private val platformIconProvider: PlatformIconProvider = PlatformIconProvider()
 ) : BaseAdapter<ListItem>() {
 
@@ -29,6 +31,7 @@ class ReviewAdapter(
             R.layout.item_paged_list -> PagedItemViewHolder(view, loadMoreCallback)
             R.layout.item_review_shimmer -> BaseViewHolder(view)
             R.layout.item_description -> DescriptionViewHolder(view)
+            R.layout.item_error -> ErrorItemViewHolder(view, onRepeatClick)
             else -> error("Unsupported viewType $viewType")
         } as BaseViewHolder<ListItem>
     }

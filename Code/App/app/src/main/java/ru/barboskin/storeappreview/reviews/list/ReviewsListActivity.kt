@@ -13,7 +13,6 @@ import ru.barboskin.storeappreview.domain.model.ReviewItem
 import ru.barboskin.storeappreview.domain.model.TeamItem
 import ru.barboskin.storeappreview.ext.*
 import ru.barboskin.storeappreview.reviews.details.ReviewDetailsActivity
-import java.util.concurrent.TimeUnit
 import kotlin.LazyThreadSafetyMode.NONE
 
 class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
@@ -42,7 +41,8 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
         toolbar.initBackNavigation(this)
         adapter = ReviewAdapter(
             ::onReviewClick,
-            ::onLoadMore
+            ::onLoadMore,
+            ::onRepeatLoadClick
         )
         recycler.adapter = adapter
     }
@@ -56,6 +56,11 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
         ReviewDetailsActivity.start(this, sharedView, reviewItem)
     }
 
+    private fun onRepeatLoadClick() {
+        adapter.startRepeatLoad()
+        updateReviewList(0)
+    }
+
     private fun onLoadMore(offset: Int) {
         adapter.startLoadMore()
         updateReviewList(offset)
@@ -65,10 +70,18 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
         repository.getReviews(teamItem.name, offset)
             .subscribeOn(io())
             .map(adapter::getNewPagedItems)
-            .delay(2, TimeUnit.SECONDS)
+            .onErrorReturn { onError(offset) }
             .observeOn(mainThread())
             .subscribeBy(adapter::submitList)
             .disposeOnDestroy(this)
+    }
+
+    private fun onError(offset: Int): List<ListItem> {
+        return if (offset == 0) {
+            adapter.currentList.filterIsInstance<DescriptionItem>() + listOf(ErrorItem(ErrorState.ERROR))
+        } else {
+            adapter.currentList.filterNot { it is PagedItem }
+        }
     }
 
     private fun createShimmers(): List<ListItem> {

@@ -45,11 +45,7 @@ enum class PagedState {
 }
 
 fun BaseAdapter<ListItem>.startLoadMore() {
-    submitList(currentList.map {
-        if (it is PagedItem) PagedItem(
-            PagedState.LOADING
-        ) else it
-    })
+    submitList(currentList.map { if (it is PagedItem) PagedItem(PagedState.LOADING) else it })
 }
 
 fun BaseAdapter<ListItem>.getNewPagedItems(newItems: List<ListItem>): List<ListItem> {
