@@ -57,6 +57,7 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
         if (requestCode == EDIT_TEAMS_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val newItems = data?.getSerializableExtra(EXTRA_NEW_TEAMS) as? List<String>
             newItems?.let(::showTeams)
+            showSnackAppOnSuccessChangeTeams()
         }
     }
 
@@ -104,5 +105,9 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
 
     private fun showSnackAppOnSuccessSendMessage() {
         Snackbar.make(content, R.string.send_messages_snack, LENGTH_LONG).show()
+    }
+
+    private fun showSnackAppOnSuccessChangeTeams() {
+        Snackbar.make(content, R.string.change_teams_snack, LENGTH_LONG).show()
     }
 }

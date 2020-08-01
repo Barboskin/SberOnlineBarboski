@@ -8,6 +8,7 @@
     <string name="choosed_teams">Выбранные команды</string>
     <string name="change_button">Изменить</string>
     <string name="send_messages_snack">Сообщения отправлены</string>
+    <string name="change_teams_snack">Команды изменены</string>
     <string name="notify_teams">Уведомить команды</string>
     <string name="repeat_button">Повторить</string>
     <string name="error_message">Упс… Не получилось загрузить данные. Может попробовать еще раз?</string>
