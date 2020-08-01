@@ -13,8 +13,11 @@ import ru.barboskin.storeappreview.R
 import ru.barboskin.storeappreview.domain.model.ReviewItem
 import ru.barboskin.storeappreview.ext.formatAsString
 import ru.barboskin.storeappreview.ext.initBackNavigation
+import ru.barboskin.storeappreview.ext.startActivity
 import ru.barboskin.storeappreview.reviews.PlatformIconProvider
 import ru.barboskin.storeappreview.reviews.TeamChipFactory
+import ru.barboskin.storeappreview.reviews.edit.EXTRA_NEW_TEAMS
+import ru.barboskin.storeappreview.reviews.edit.EditTeamsActivity
 import kotlin.LazyThreadSafetyMode.NONE
 
 
@@ -23,22 +26,17 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
     companion object {
 
         private const val EXTRA_REVIEW_ITEM = "EXTRA_REVIEW_ITEM"
+        private const val EDIT_TEAMS_REQUEST_CODE = 54
 
-        fun start(
-            activity: Activity,
-            sharedView: View,
-            reviewItem: ReviewItem
-        ) {
-            val intent = Intent(activity, ReviewDetailsActivity::class.java).putExtra(
-                EXTRA_REVIEW_ITEM,
-                reviewItem
-            )
+        fun start(activity: Activity, sharedView: View, reviewItem: ReviewItem) {
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                 activity,
                 sharedView,
                 ViewCompat.getTransitionName(sharedView).orEmpty()
             )
-            activity.startActivity(intent, options.toBundle())
+            activity.startActivity<ReviewDetailsActivity>(options.toBundle()) {
+                putExtra(EXTRA_REVIEW_ITEM, reviewItem)
+            }
         }
     }
 
@@ -47,6 +45,18 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initUi()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == EDIT_TEAMS_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val newItems = data?.getSerializableExtra(EXTRA_NEW_TEAMS) as? List<String>
+            newItems?.let(::showTeams)
+        }
+    }
+
+    private fun initUi() {
         toolbar.initBackNavigation(this)
         with(reviewItem) {
             collapsingToolbar.title = date.formatAsString()
@@ -55,14 +65,19 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
             titleView.text = title
             descView.text = desc
             negativeIcon.isVisible = isNegative
-            /*teams.forEach { team ->
-                teamsContainer.addView(teamChipFactory(this@ReviewDetailsActivity, team))
-            }*/
-
-            List(20) { "Команда $it" }.forEach { team ->
-                teamsContainer.addView(teamChipFactory(this@ReviewDetailsActivity, team))
-            }
-            changeTeamsButton.setOnClickListener { }
+            showTeams(teams)
+            changeTeamsButton.setOnClickListener { onChangeTeamsClick() }
         }
+    }
+
+    private fun showTeams(teams: List<String>) {
+        teamsContainer.removeAllViews()
+        teams.forEach { team ->
+            teamsContainer.addView(teamChipFactory(this@ReviewDetailsActivity, team))
+        }
+    }
+
+    private fun onChangeTeamsClick() {
+        EditTeamsActivity.startForResult(this, reviewItem, EDIT_TEAMS_REQUEST_CODE)
     }
 }

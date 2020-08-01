@@ -32,6 +32,10 @@
             android:name=".reviews.details.ReviewDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".reviews.edit.EditTeamsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

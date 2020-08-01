@@ -1,15 +1,15 @@
 package ru.barboskin.storeappreview.di.modules
 
 import ru.barboskin.storeappreview.base.cache.TeamsInMemoryCache
-import ru.barboskin.storeappreview.domain.CategoriesRepository
+import ru.barboskin.storeappreview.domain.TeamsRepository
 
-interface CategoriesModule {
-    val categoriesRepository: CategoriesRepository
+interface TeamsModule {
+    val teamsRepository: TeamsRepository
 }
 
-fun CategoriesModule(networkModule: NetworkModule) = object : CategoriesModule {
+fun TeamsModule(networkModule: NetworkModule) = object : TeamsModule {
 
-    override val categoriesRepository: CategoriesRepository = CategoriesRepository(
+    override val teamsRepository: TeamsRepository = TeamsRepository(
         networkModule.reviewsApi,
         TeamsInMemoryCache()
     )

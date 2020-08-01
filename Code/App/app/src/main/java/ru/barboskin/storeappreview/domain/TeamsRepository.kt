@@ -5,7 +5,7 @@ import ru.barboskin.storeappreview.base.cache.TeamsCache
 import ru.barboskin.storeappreview.base.network.ReviewsApi
 import ru.barboskin.storeappreview.domain.model.TeamItem
 
-class CategoriesRepository(
+class TeamsRepository(
     private val api: ReviewsApi,
     private val cache: TeamsCache
 ) {

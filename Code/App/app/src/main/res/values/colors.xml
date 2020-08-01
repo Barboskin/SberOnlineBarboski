@@ -6,8 +6,10 @@
     <color name="black">#000000</color>
     <color name="blue">#2196f3</color>
     <color name="dark_grey">#bcbcbc</color>
+    <color name="black_50">#80000000</color>
     <color name="grey">#e0e0e0</color>
     <color name="light_grey">#eeeeee</color>
     <color name="white">#ffffff</color>
     <color name="red">#F44336</color>
+
 </resources>

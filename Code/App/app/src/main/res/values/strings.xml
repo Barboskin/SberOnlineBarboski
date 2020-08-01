@@ -4,9 +4,15 @@
     <string name="teams">Команды</string>
     <string name="reviews">Отзывы</string>
     <string name="statistics">Статистика</string>
+    <string name="change_teams">Изменить команды</string>
+    <string name="choosed_teams">Выбранные команды</string>
     <string name="change_button">Изменить</string>
     <string name="repeat_button">Повторить</string>
     <string name="error_message">Упс… Не получилось загрузить данные. Может попробовать еще раз?</string>
+
+    <string name="error_dialog_title">Ошибка</string>
+    <string name="error_dialog_ok_button">Принял</string>
+    <string name="error_dialog_message">Не получилось поменять категории по этому отзыву. Прости нас и попробуй пожалуйста еще раз</string>
 
     <string name="platform_icon_transition_name">platform_icon</string>
 </resources>

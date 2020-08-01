@@ -18,6 +18,7 @@ class TeamChipFactory : (Activity, String) -> View {
                 setMargins(0, 0, horizontalMargin, 0)
             }
             layoutParams = params
+            tag = team
         }
     }
 }

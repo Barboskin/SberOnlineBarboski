@@ -18,7 +18,7 @@ import kotlin.LazyThreadSafetyMode.NONE
 
 class TeamsListFragment : Fragment(R.layout.frament_teams_list) {
 
-    private val repository by lazy(NONE) { getComponent().categoriesRepository }
+    private val repository by lazy(NONE) { getComponent().teamsRepository }
     private lateinit var adapter: TeamsAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
