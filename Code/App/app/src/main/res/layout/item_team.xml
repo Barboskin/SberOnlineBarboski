@@ -12,20 +12,25 @@
         style="@style/TextAppearance.AppCompat.ItemTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:maxLines="2"
         app:layout_constraintEnd_toStartOf="@id/countView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Баги" />
+        tools:text="Платежи" />
 
     <TextView
         android:id="@+id/descView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:maxLines="2"
+        android:minLines="2"
         app:layout_constraintEnd_toStartOf="@id/countView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleView"
-        tools:text="Всякие неприятные вещи" />
+        tools:text="Команда занимающаяся всеми видами платежей" />
 
     <TextView
         android:id="@+id/countView"

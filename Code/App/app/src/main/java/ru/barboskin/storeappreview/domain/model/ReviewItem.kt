@@ -9,7 +9,7 @@ data class ReviewItem(
     val desc: String,
     val date: Date,
     val starCount: Int,
-    val categoryType: CategoryType,
+    val teams: List<String>,
     val isNegative: Boolean,
     override val id: String
 ) : ListItem {

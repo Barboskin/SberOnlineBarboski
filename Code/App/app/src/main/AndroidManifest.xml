@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:name=".reviews.ReviewsActivity"
+            android:name=".reviews.list.ReviewsListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity

@@ -1,26 +1,34 @@
 package ru.barboskin.storeappreview.base.network
 
 import io.reactivex.Single
-import ru.barboskin.storeappreview.domain.model.CategoryItem
-import ru.barboskin.storeappreview.domain.model.CategoryType
 import ru.barboskin.storeappreview.domain.model.ReviewItem
+import ru.barboskin.storeappreview.domain.model.TeamItem
 import java.util.*
 
 class ReviewsApiStub : ReviewsApi {
 
-    override fun categories(): Single<List<CategoryItem>> {
+    override fun teams(): Single<List<TeamItem>> {
+        val random = Random()
         return Single.just(
-            CategoryType.values().map {
-                CategoryItem(
-                    type = it,
-                    count = it.ordinal,
-                    id = it.name
+            listOf(
+                "Платежи",
+                "PR",
+                "Валюта",
+                "Зарплатный проект",
+                "Кредиты",
+                "Дизайн"
+            ).map {
+                TeamItem(
+                    id = it,
+                    name = it,
+                    decs = it + it + it + it,
+                    count = random.nextInt(100)
                 )
             }
         )
     }
 
-    override fun reviews(categoryType: CategoryType, offset: Int): Single<List<ReviewItem>> {
+    override fun reviews(team: String, offset: Int): Single<List<ReviewItem>> {
         val size = 50
         return Single.just(
             List(size) {
@@ -29,7 +37,7 @@ class ReviewsApiStub : ReviewsApi {
                     id = (it + offset).toString(),
                     date = Date(),
                     starCount = it % 5,
-                    categoryType = categoryType,
+                    teams = listOf(team),
                     desc = "Description on review ${it + offset}",
                     isNegative = it % 2 == 0
                 )

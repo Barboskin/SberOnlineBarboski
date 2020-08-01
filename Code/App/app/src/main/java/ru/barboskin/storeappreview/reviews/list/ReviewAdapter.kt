@@ -1,4 +1,4 @@
-package ru.barboskin.storeappreview.reviews
+package ru.barboskin.storeappreview.reviews.list
 
 import android.view.View
 import androidx.core.view.isVisible
@@ -21,7 +21,10 @@ class ReviewAdapter(
 
     override fun createViewHolder(viewType: Int, view: View): BaseViewHolder<ListItem> {
         return when (viewType) {
-            R.layout.item_review -> ReviewViewHolder(view, reviewClickListener)
+            R.layout.item_review -> ReviewViewHolder(
+                view,
+                reviewClickListener
+            )
             R.layout.item_paged_list -> PagedItemViewHolder(view, loadMoreCallback)
             R.layout.item_review_shimmer -> BaseViewHolder(view)
             else -> error("Unsupported viewType $viewType")

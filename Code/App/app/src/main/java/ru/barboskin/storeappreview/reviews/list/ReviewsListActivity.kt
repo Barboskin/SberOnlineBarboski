@@ -1,4 +1,4 @@
-package ru.barboskin.storeappreview.reviews
+package ru.barboskin.storeappreview.reviews.list
 
 import android.app.Activity
 import android.os.Bundle
@@ -11,26 +11,27 @@ import ru.barboskin.storeappreview.base.ui.ListItem
 import ru.barboskin.storeappreview.base.ui.ShimmerItem
 import ru.barboskin.storeappreview.base.ui.getNewPagedItems
 import ru.barboskin.storeappreview.base.ui.startLoadMore
-import ru.barboskin.storeappreview.domain.model.CategoryItem
 import ru.barboskin.storeappreview.domain.model.ReviewItem
+import ru.barboskin.storeappreview.domain.model.TeamItem
 import ru.barboskin.storeappreview.ext.*
 import ru.barboskin.storeappreview.reviews.details.ReviewDetailsActivity
+import java.util.concurrent.TimeUnit
 
-class ReviewsActivity : AppCompatActivity(R.layout.activity_reviews_list) {
+class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
 
     companion object {
 
-        private const val EXTRA_CATEGORY_TYPE = "EXTRA_CATEGORY_TYPE"
+        private const val EXTRA_TEAM_ITEM = "EXTRA_TEAM_ITEM"
 
-        fun start(activity: Activity, categoryItem: CategoryItem) {
-            activity.startActivity<ReviewsActivity> {
-                putExtra(EXTRA_CATEGORY_TYPE, categoryItem)
+        fun start(activity: Activity, teamItem: TeamItem) {
+            activity.startActivity<ReviewsListActivity> {
+                putExtra(EXTRA_TEAM_ITEM, teamItem)
             }
         }
     }
 
     private val repository by lazy { getComponent().reviewsRepository }
-    private val categoryItem by lazy { intent.getSerializableExtra(EXTRA_CATEGORY_TYPE) as CategoryItem }
+    private val teamItem by lazy { intent.getSerializableExtra(EXTRA_TEAM_ITEM) as TeamItem }
     private lateinit var adapter: ReviewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,9 +41,12 @@ class ReviewsActivity : AppCompatActivity(R.layout.activity_reviews_list) {
     }
 
     private fun initUi() {
-        collapsingToolbar.title = categoryItem.type.name
+        collapsingToolbar.title = teamItem.name
         toolbar.initBackNavigation(this)
-        adapter = ReviewAdapter(::onReviewClick, ::onLoadMore)
+        adapter = ReviewAdapter(
+            ::onReviewClick,
+            ::onLoadMore
+        )
         recycler.adapter = adapter
     }
 
@@ -61,9 +65,10 @@ class ReviewsActivity : AppCompatActivity(R.layout.activity_reviews_list) {
     }
 
     private fun updateReviewList(offset: Int) {
-        repository.getReviews(categoryItem.type, offset)
+        repository.getReviews(teamItem.name, offset)
             .subscribeOn(io())
             .map(adapter::getNewPagedItems)
+            .delay(2, TimeUnit.SECONDS)
             .observeOn(mainThread())
             .subscribeBy(adapter::submitList)
             .disposeOnDestroy(this)
