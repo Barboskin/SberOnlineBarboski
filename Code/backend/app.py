@@ -8,7 +8,8 @@ from flask_ngrok import run_with_ngrok
 from psycopg2.extras import RealDictCursor, register_uuid
 
 app = Flask(__name__)
-# run_with_ngrok(app=app)
+app.config['JSON_AS_ASCII'] = False
+run_with_ngrok(app=app)
 register_uuid()
 
 
@@ -51,7 +52,8 @@ def db_get_random_review_id():
     untrained = [f'{intonation} is Null' for intonation in INTONATION]
     untrained += [f'{command}=0' for command in COMMANDS]
     with db_connection() as con:
-        con.execute(f"select * from user_reviews where rate < 5 and {' and '.join(untrained)} offset {randint(0, 50000)} limit 1")
+        con.execute(f"select * from user_reviews where rate < 5 and {' and '.join(untrained)} "
+                    f"offset {randint(0, 50000)} limit 1")
         review_data = con.fetchone()
     return review_data['id']
 
@@ -69,6 +71,36 @@ def db_get_review(review_id):
         con.execute(f"select * from user_reviews where id=%(id)s", {"id": review_id})
         review_data = con.fetchone()
     return review_data
+
+
+def db_get_reviews_by_command_id(command_id, offset):
+    condition = f"command_{command_id}_estimate > 50"
+    limit = 50
+    with db_connection() as con:
+        con.execute("select * from commands order by id")
+        commands = con.fetchall()
+        con.execute(f"select * from user_reviews where {condition} "
+                    f"order by create_time desc offset %(offset)s limit %(limit)s",
+                    {"id": command_id, "offset": offset, "limit": limit})
+        review_data = con.fetchall()
+    filtered_review_data = []
+    for record in review_data:
+        filtered_record = {"teams": []}
+        for k, v in record.items():
+            if k == 'review_title':
+                if not v or (isinstance(v, str) and v.strip() == ''):
+                    filtered_record[k] = "Без заголовка :("
+                else:
+                    filtered_record[k] = v
+            elif k in COMMANDS:
+                command_id = int(k.split('_')[1])
+                if v > 50:
+                    filtered_record["teams"].append(
+                        [command for command in commands if command['id'] == command_id][0])
+            else:
+                filtered_record[k] = v
+        filtered_review_data.append(filtered_record)
+    return filtered_review_data
 
 
 def get_form_data(with_pretrain=False):
@@ -96,7 +128,6 @@ def create_review():
     if request.method == 'POST':
         if request.form.get('action', '') == action:
             review_data = get_form_data(with_pretrain=with_pretrain)
-            print(review_data, with_pretrain)
             new_review = db_add_review(review_data=review_data, with_pretrain=with_pretrain)
             return redirect(f"/customer_reviews/{new_review['id']}/edit", code=302)
     return render_template('morda.html', action=action, with_pretrain=with_pretrain, commands=commands)
@@ -148,18 +179,27 @@ def api_get_commands():
 @app.route('/api/customer_reviews/change', methods=['POST'])
 def api_change_review():
     try:
-        review_data = request.json
+        review_id = request.json.get('id')
+        command_ids = request.json.get('teams')
+        review_data = db_get_review(review_id=review_id)
         if review_data:
+            for command in COMMANDS:
+                command_id = int(command.split('_')[1])
+                if command_id in command_ids:
+                    review_data[command] = 100
+                else:
+                    review_data[command] = 0
             db_change_review(review_data=review_data)
-        resp = {'error': None}
+        resp = (jsonify({'error': None}), 200)
     except Exception as e:
-        resp = {'error': str(e)}
-        return make_response(jsonify(resp), 500)
-    return make_response(jsonify(resp), 200)
+        resp = jsonify({'error': str(e)}, 500)
+    return make_response(resp)
 
-@app.route('/api/customer_reviews/category/<int:category>/get_batch', methods=['GET'])
-def api_get_reviews(category):
-    data = {}
+
+@app.route('/api/customer_reviews/category/<int:command_id>/get_batch', methods=['GET'])
+def api_get_reviews(command_id):
+    offset = int(request.args.get('offset', 0))
+    data = db_get_reviews_by_command_id(command_id=command_id, offset=offset)
     return make_response(jsonify(data), 200)
 
 
