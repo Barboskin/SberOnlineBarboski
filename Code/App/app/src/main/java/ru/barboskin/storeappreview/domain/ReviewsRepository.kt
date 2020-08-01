@@ -8,7 +8,7 @@ class ReviewsRepository(
     private val api: ReviewsApi
 ) {
 
-    fun getReviews(team: String, offset: Int): Single<List<ReviewItem>> {
-        return api.reviews(team, offset)
+    fun getReviews(teamId: Int, offset: Int): Single<List<ReviewItem>> {
+        return api.reviews(teamId, offset)
     }
 }

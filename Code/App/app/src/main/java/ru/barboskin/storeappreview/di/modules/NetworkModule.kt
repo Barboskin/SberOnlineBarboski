@@ -1,16 +1,13 @@
 package ru.barboskin.storeappreview.di.modules
 
-import android.content.Context
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.barboskin.storeappreview.BuildConfig
 import ru.barboskin.storeappreview.base.network.ReviewsApi
 import ru.barboskin.storeappreview.base.network.ReviewsApiStub
 import ru.barboskin.storeappreview.base.network.SlackApi
 import kotlin.LazyThreadSafetyMode.NONE
-
 
 interface NetworkModule {
 
@@ -18,10 +15,11 @@ interface NetworkModule {
     val slackApi: SlackApi
 }
 
-fun NetworkModule(context: Context) = object : NetworkModule {
+fun NetworkModule() = object : NetworkModule {
 
     override val reviewsApi: ReviewsApi by lazy(NONE) {
-        if (BuildConfig.DEBUG) {
+        val needStubApi = false//BuildConfig.DEBUG
+        if (needStubApi) {
             ReviewsApiStub()
         } else {
             Retrofit.Builder()
@@ -44,7 +42,7 @@ fun NetworkModule(context: Context) = object : NetworkModule {
 
     private val slackBaseUrl: String = "https://hooks.slack.com/"
 
-    private val backendBaseUrl: String = "https:/vk.com/"
+    private val backendBaseUrl: String = "https://77886b94e8f2.ngrok.io/"
 
     private val rxJava2CallAdapterFactory: RxJava2CallAdapterFactory =
         RxJava2CallAdapterFactory.create()

@@ -1,6 +1,8 @@
 package ru.barboskin.storeappreview.base.network
 
+import io.reactivex.Completable
 import io.reactivex.Single
+import ru.barboskin.storeappreview.domain.model.ChangeReviewTeamsBody
 import ru.barboskin.storeappreview.domain.model.ReviewItem
 import ru.barboskin.storeappreview.domain.model.TeamItem
 import java.util.*
@@ -19,30 +21,34 @@ class ReviewsApiStub : ReviewsApi {
                 "Дизайн"
             ).map {
                 TeamItem(
-                    id = it,
+                    id = 2,
                     name = it,
-                    decs = it + it + it + it,
+                    description = it + it + it + it,
                     count = random.nextInt(100)
                 )
             }
         )
     }
 
-    override fun reviews(team: String, offset: Int): Single<List<ReviewItem>> {
+    override fun reviews(teamId: Int, offset: Int): Single<List<ReviewItem>> {
         val size = 50
         return Single.just(
             List(size) {
                 ReviewItem(
-                    title = "Заголовок отзыва ${it + offset}",
+                    review_title = "Заголовок отзыва ${it + offset}",
                     id = (it + offset).toString(),
-                    date = Date(),
-                    starCount = it % 5,
-                    teams = listOf(team),
-                    desc = "Описание того, как все очень плохо, как все бесит и того, как надо сделать, чтобы стало лучше, гораздо лучше, да хотя бы в миллион раз лучше. Спасибо ${it + offset}",
-                    isNegative = it % 2 == 0,
-                    isApple = it % 3 == 0
+                    create_time = Date(),
+                    rate = it % 5,
+                    teams = emptyList(),
+                    review_text = "Описание того, как все очень плохо, как все бесит и того, как надо сделать, чтобы стало лучше, гораздо лучше, да хотя бы в миллион раз лучше. Спасибо ${it + offset}",
+                    intonation = it % 2 == 0,
+                    platform = it % 3 == 0
                 )
             }
         )
+    }
+
+    override fun changeTeams(body: ChangeReviewTeamsBody): Completable {
+        return Completable.complete()
     }
 }

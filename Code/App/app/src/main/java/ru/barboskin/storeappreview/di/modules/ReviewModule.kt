@@ -10,11 +10,8 @@ interface ReviewModule {
 
 fun ReviewModule(networkModule: NetworkModule) = object : ReviewModule {
 
-    override val reviewsRepository: ReviewsRepository = ReviewsRepository(
-        networkModule.reviewsApi
-    )
+    override val reviewsRepository: ReviewsRepository = ReviewsRepository(networkModule.reviewsApi)
 
-    override val editTeamsInteractor: EditTeamsInteractor = EditTeamsInteractor(
-        reviewsRepository
-    )
+    override val editTeamsInteractor: EditTeamsInteractor =
+        EditTeamsInteractor(networkModule.reviewsApi)
 }

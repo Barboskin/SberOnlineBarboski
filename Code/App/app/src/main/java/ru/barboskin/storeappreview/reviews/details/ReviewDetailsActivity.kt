@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.activity_review_details.*
 import ru.barboskin.storeappreview.R
 import ru.barboskin.storeappreview.base.network.SlackMessage
 import ru.barboskin.storeappreview.domain.model.ReviewItem
+import ru.barboskin.storeappreview.domain.model.TeamItem
 import ru.barboskin.storeappreview.ext.*
 import ru.barboskin.storeappreview.reviews.PlatformIconProvider
 import ru.barboskin.storeappreview.reviews.TeamChipFactory
@@ -43,43 +44,45 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
         }
     }
 
-    private val reviewItem by lazy(NONE) { intent.getParcelableExtra(EXTRA_REVIEW_ITEM) as ReviewItem }
+    private lateinit var reviewItem: ReviewItem
     private val teamChipFactory by lazy(NONE) { TeamChipFactory() }
     private val slackApi by lazy(NONE) { getComponent().slackApi }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        reviewItem = intent.getParcelableExtra(EXTRA_REVIEW_ITEM) as ReviewItem
         initUi()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == EDIT_TEAMS_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val newItems = data?.getSerializableExtra(EXTRA_NEW_TEAMS) as? List<String>
+            val newItems = data?.getSerializableExtra(EXTRA_NEW_TEAMS) as? List<TeamItem>
             newItems?.let(::showTeams)
             showSnackAppOnSuccessChangeTeams()
+            reviewItem = reviewItem.copy(teams = newItems.orEmpty())
         }
     }
 
     private fun initUi() {
         toolbar.initBackNavigation(this)
         with(reviewItem) {
-            collapsingToolbar.title = date.formatAsString()
-            platformIcon.setImageResource(PlatformIconProvider().invoke(isApple))
-            ratingView.rating = starCount.toFloat()
-            titleView.text = title
-            descView.text = desc
-            negativeIcon.isVisible = isNegative
+            collapsingToolbar.title = create_time.formatAsString()
+            platformIcon.setImageResource(PlatformIconProvider().invoke(platform))
+            ratingView.rating = rate.toFloat()
+            titleView.text = review_title
+            descView.text = review_text
+            negativeIcon.isVisible = !intonation
             showTeams(teams)
             changeTeamsButton.setOnClickListener { onChangeTeamsClick() }
         }
         notifyButton.setOnClickListener { notifyTeams() }
     }
 
-    private fun showTeams(teams: List<String>) {
+    private fun showTeams(teams: List<TeamItem>) {
         teamsContainer.removeAllViews()
         teams.forEach { team ->
-            teamsContainer.addView(teamChipFactory(this@ReviewDetailsActivity, team))
+            teamsContainer.addView(teamChipFactory(this@ReviewDetailsActivity, team.name))
         }
     }
 
@@ -97,9 +100,9 @@ class ReviewDetailsActivity : AppCompatActivity(R.layout.activity_review_details
 
     private fun createMessage(): String {
         return with(reviewItem) {
-            val platform = if (isApple) "iOS" else "Android"
-            val mark = "$starCount/5"
-            "*$platform $mark*\n*$title* \n\n $desc"
+            val platform = if (platform) "iOS" else "Android"
+            val mark = "$rate/5"
+            "*$platform $mark*\n*$review_title* \n\n $review_text"
         }
     }
 

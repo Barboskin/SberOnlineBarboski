@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        app:maxLine="4"
         android:animateLayoutChanges="true"
         app:flexDirection="row"
         app:flexWrap="wrap"

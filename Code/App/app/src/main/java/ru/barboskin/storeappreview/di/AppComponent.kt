@@ -17,7 +17,7 @@ interface AppComponent {
 }
 
 fun AppComponent(context: Context): AppComponent {
-    val networkModule = NetworkModule(context)
+    val networkModule = NetworkModule()
     return object : AppComponent,
         TeamsModule by TeamsModule(networkModule),
         ReviewModule by ReviewModule(networkModule),

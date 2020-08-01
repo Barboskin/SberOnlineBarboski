@@ -28,18 +28,18 @@ class TeamsAdapter(
 class TeamViewHolder(
     view: View,
     private val teamClickListener: (TeamItem) -> Unit
-) : BaseViewHolder<TeamItem>(view) {
+) : BaseViewHolder<TeamItemUi>(view) {
 
     init {
-        containerView.setOnClickListener { item?.let(teamClickListener) }
+        containerView.setOnClickListener { item?.item?.let(teamClickListener) }
     }
 
-    override fun bind(item: TeamItem) {
+    override fun bind(item: TeamItemUi) {
         super.bind(item)
-        with(item) {
+        with(item.item) {
             titleView.text = name
-            descView.text = decs
-            countView.text = count.toString()
+            descView.text = description
+            countView.text = count?.toString()
         }
     }
 }

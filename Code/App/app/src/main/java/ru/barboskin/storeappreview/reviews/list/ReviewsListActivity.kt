@@ -48,7 +48,7 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
     }
 
     private fun loadReviews() {
-        adapter.submitList(listOf(DescriptionItem(teamItem.decs)) + createShimmers())
+        adapter.submitList(listOf(DescriptionItem(teamItem.description)) + createShimmers())
         updateReviewList(0)
     }
 
@@ -67,8 +67,9 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
     }
 
     private fun updateReviewList(offset: Int) {
-        repository.getReviews(teamItem.name, offset)
+        repository.getReviews(teamItem.id, offset)
             .subscribeOn(io())
+            .map { it.map(::ReviewItemUi) }
             .map(adapter::getNewPagedItems)
             .onErrorReturn { onError(offset) }
             .observeOn(mainThread())

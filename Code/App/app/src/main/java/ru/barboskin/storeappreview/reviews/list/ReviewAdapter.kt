@@ -41,19 +41,26 @@ class ReviewViewHolder(
     view: View,
     private val reviewClickListener: (View, ReviewItem) -> Unit,
     private val platformIconProvider: PlatformIconProvider
-) : BaseViewHolder<ReviewItem>(view) {
+) : BaseViewHolder<ReviewItemUi>(view) {
 
     init {
-        containerView.setOnClickListener { item?.let { reviewClickListener(platformIcon, it) } }
+        containerView.setOnClickListener {
+            item?.let {
+                reviewClickListener(
+                    platformIcon,
+                    it.reviewItem
+                )
+            }
+        }
     }
 
-    override fun bind(item: ReviewItem) {
+    override fun bind(item: ReviewItemUi) {
         super.bind(item)
-        with(item) {
-            titleView.text = title
-            dateView.text = date.formatAsString()
-            negativeIcon.isVisible = isNegative
-            platformIcon.setImageResource(platformIconProvider(isApple))
+        with(item.reviewItem) {
+            titleView.text = review_title.takeIf { !it.startsWith("Без заголовка") } ?: review_text
+            dateView.text = create_time.formatAsString()
+            negativeIcon.isVisible = !intonation
+            platformIcon.setImageResource(platformIconProvider(platform))
         }
     }
 }

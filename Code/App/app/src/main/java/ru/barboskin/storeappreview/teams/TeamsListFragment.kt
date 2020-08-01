@@ -3,7 +3,6 @@ package ru.barboskin.storeappreview.teams
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.frament_teams_list.*
@@ -30,8 +29,9 @@ class TeamsListFragment : Fragment(R.layout.frament_teams_list) {
     }
 
     private fun loadTeams() {
-        (repository.getTeams() as Single<List<ListItem>>)
+        repository.getTeams()
             .subscribeOn(io())
+            .map<List<ListItem>> { it.map(::TeamItemUi) }
             .observeOn(mainThread())
             .onErrorReturn { listOf<ListItem>(ErrorItem(ErrorState.ERROR)) }
             .subscribeBy(adapter::submitList)

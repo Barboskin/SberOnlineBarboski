@@ -7,7 +7,7 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
-private val BACKEND_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+private val BACKEND_DATE_FORMAT = SimpleDateFormat("E, dd MMM yyyy HH:mm:ss zzzz", Locale.US)
 
 class DateJsonAdapter : JsonDeserializer<Date> {
 
