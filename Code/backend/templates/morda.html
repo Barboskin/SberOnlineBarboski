@@ -10,13 +10,14 @@
     <h1>{% if is_create %}Новый отзыв:{% elif is_edit %}Редактировать отзыв:{% endif %}</h1>
     <form method="POST">
         <input type="hidden" id="action" name="action" value="{{ action }}">
+        {% if is_edit %}<input type="hidden" id="id" name="id" value="{{ review_data['id'] }}">{% endif %}
         <p><label for="review_title">Тема:</label>
         <input type="text" id="review_title" name="review_title"
                   value="{% if is_edit %}{{ review_data['review_title'] }}{% endif %}"
                   {% if is_edit %} readonly {% endif %}
-                  placeholder="Не работает"</p>
+                  placeholder="Без темы"</p>
         <p><label for="review_text">Отзыв:</label><br/>
-        <textarea id="review_text" name="review_text" placeholder="Баг в приложении"
+        <textarea id="review_text" name="review_text" placeholder="Привет, Сбер!" rows="10" cols="45"
                      {% if is_edit %} readonly {% endif %}>
             {% if is_edit %}{{ review_data['review_text'] }}{% endif %}
         </textarea></p>
@@ -48,7 +49,7 @@
                 <p>Пренадлежность к команде:</p>
                 {% for command in commands %}
                     {% set command_id="command_{}_estimate".format(command['id']) %}
-                    <p><label for="{{ command_id }}">{{ command['name'] }}</label>
+                    <p><label for="{{ command_id }}">{{ command['name'] }} || {{ command['description'] }}</label>
                     <input type="checkbox" id="{{ command_id }}" name="{{ command_id }}" value="100"
                      {% if is_edit and review_data[command_id] > 50 %} checked {% endif %}></p>
                 {% endfor %}
