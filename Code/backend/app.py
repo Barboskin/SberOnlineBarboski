@@ -1,9 +1,10 @@
 from contextlib import contextmanager
 from datetime import datetime
-
 from random import randint
+
 import psycopg2 as pg
 from flask import Flask, render_template, jsonify, make_response, request, redirect
+from flask_ngrok import run_with_ngrok
 from psycopg2.extras import RealDictCursor, register_uuid
 
 app = Flask(__name__)
@@ -57,6 +58,7 @@ def db_get_random_review_id():
 
 def db_change_review(review_data):
     excluded = ('id', "create_time", "rate", "review_title", "review_text", "platform")
+    print(review_data)
     update_values = ', '.join([f'{k}=%({k})s' for k in review_data if k not in excluded])
     with db_connection() as con:
         con.execute(f"update user_reviews set {update_values} where id=%(id)s", review_data)
@@ -76,7 +78,7 @@ def get_form_data(with_pretrain=False):
     if with_pretrain:
         pretrain_data = {k: int(request.form.get(k, 0)) for k in COMMANDS}
         pretrain_data.update({k: request.form.get(k, None) for k in INTONATION})
-        pretrain_data['intonation'] = bool(pretrain_data['intonation']) if pretrain_data['intonation'] else None
+        pretrain_data['intonation'] = True if pretrain_data.get('intonation', '') == 'True' else False
         review_data.update(pretrain_data)
     return review_data
 
@@ -123,7 +125,6 @@ def get_random_review():
         review_id = db_get_random_review_id()
     elif request.method == 'POST':
         review_id = request.form.get('id')
-    print(review_id)
     review_data = db_get_review(review_id=review_id)
     if request.method == 'POST':
         if request.form.get('action', '') == action:
