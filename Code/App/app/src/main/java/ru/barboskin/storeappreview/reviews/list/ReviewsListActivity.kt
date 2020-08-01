@@ -7,10 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.activity_reviews_list.*
 import ru.barboskin.storeappreview.R
-import ru.barboskin.storeappreview.base.ui.ListItem
-import ru.barboskin.storeappreview.base.ui.ShimmerItem
-import ru.barboskin.storeappreview.base.ui.getNewPagedItems
-import ru.barboskin.storeappreview.base.ui.startLoadMore
+import ru.barboskin.storeappreview.base.ui.items.*
 import ru.barboskin.storeappreview.domain.model.ReviewItem
 import ru.barboskin.storeappreview.domain.model.TeamItem
 import ru.barboskin.storeappreview.ext.*
@@ -51,7 +48,7 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
     }
 
     private fun loadReviews() {
-        adapter.submitList(createShimmers())
+        adapter.submitList(listOf(DescriptionItem(teamItem.decs)) + createShimmers())
         updateReviewList(0)
     }
 
@@ -75,7 +72,8 @@ class ReviewsListActivity : AppCompatActivity(R.layout.activity_reviews_list) {
     }
 
     private fun createShimmers(): List<ListItem> {
-        val shimmerItem = object : ShimmerItem {
+        val shimmerItem = object :
+            ShimmerItem {
             override val id: String = "SHIMMER_REVIEW"
             override val viewType: Int = R.layout.item_review_shimmer
         }

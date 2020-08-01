@@ -6,8 +6,9 @@ import kotlinx.android.synthetic.main.item_review.*
 import ru.barboskin.storeappreview.R
 import ru.barboskin.storeappreview.base.ui.BaseAdapter
 import ru.barboskin.storeappreview.base.ui.BaseViewHolder
-import ru.barboskin.storeappreview.base.ui.ListItem
-import ru.barboskin.storeappreview.base.ui.PagedItemViewHolder
+import ru.barboskin.storeappreview.base.ui.items.DescriptionViewHolder
+import ru.barboskin.storeappreview.base.ui.items.ListItem
+import ru.barboskin.storeappreview.base.ui.items.PagedItemViewHolder
 import ru.barboskin.storeappreview.domain.model.ReviewItem
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,12 +22,10 @@ class ReviewAdapter(
 
     override fun createViewHolder(viewType: Int, view: View): BaseViewHolder<ListItem> {
         return when (viewType) {
-            R.layout.item_review -> ReviewViewHolder(
-                view,
-                reviewClickListener
-            )
+            R.layout.item_review -> ReviewViewHolder(view, reviewClickListener)
             R.layout.item_paged_list -> PagedItemViewHolder(view, loadMoreCallback)
             R.layout.item_review_shimmer -> BaseViewHolder(view)
+            R.layout.item_description -> DescriptionViewHolder(view)
             else -> error("Unsupported viewType $viewType")
         } as BaseViewHolder<ListItem>
     }

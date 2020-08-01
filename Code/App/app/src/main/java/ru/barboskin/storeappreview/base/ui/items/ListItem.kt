@@ -1,4 +1,4 @@
-package ru.barboskin.storeappreview.base.ui
+package ru.barboskin.storeappreview.base.ui.items
 
 import androidx.annotation.LayoutRes
 

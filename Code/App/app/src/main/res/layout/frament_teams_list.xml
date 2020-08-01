@@ -18,7 +18,7 @@
             app:expandedTitleMarginStart="16dp"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.ScreenTitle"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:title="Отзывы">
+            app:title="Команды">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"

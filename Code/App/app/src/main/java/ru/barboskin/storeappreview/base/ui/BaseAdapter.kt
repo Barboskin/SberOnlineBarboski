@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
+import ru.barboskin.storeappreview.base.ui.items.ListItem
 
 abstract class BaseAdapter<T : ListItem> :
     ListAdapter<T, BaseViewHolder<T>>(DefaultDiffCallback()) {

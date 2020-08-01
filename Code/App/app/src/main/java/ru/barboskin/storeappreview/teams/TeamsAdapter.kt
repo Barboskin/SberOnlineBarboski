@@ -5,7 +5,7 @@ import kotlinx.android.synthetic.main.item_team.*
 import ru.barboskin.storeappreview.R
 import ru.barboskin.storeappreview.base.ui.BaseAdapter
 import ru.barboskin.storeappreview.base.ui.BaseViewHolder
-import ru.barboskin.storeappreview.base.ui.ListItem
+import ru.barboskin.storeappreview.base.ui.items.ListItem
 import ru.barboskin.storeappreview.domain.model.TeamItem
 
 class TeamsAdapter(

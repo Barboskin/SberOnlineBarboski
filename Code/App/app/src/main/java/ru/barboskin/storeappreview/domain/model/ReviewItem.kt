@@ -1,7 +1,7 @@
 package ru.barboskin.storeappreview.domain.model
 
 import ru.barboskin.storeappreview.R
-import ru.barboskin.storeappreview.base.ui.ListItem
+import ru.barboskin.storeappreview.base.ui.items.ListItem
 import java.util.*
 
 data class ReviewItem(

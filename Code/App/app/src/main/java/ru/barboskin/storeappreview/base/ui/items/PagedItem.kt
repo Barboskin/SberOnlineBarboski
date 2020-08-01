@@ -1,9 +1,11 @@
-package ru.barboskin.storeappreview.base.ui
+package ru.barboskin.storeappreview.base.ui.items
 
 import android.view.View
 import androidx.core.view.isVisible
 import kotlinx.android.synthetic.main.item_paged_list.*
 import ru.barboskin.storeappreview.R
+import ru.barboskin.storeappreview.base.ui.BaseAdapter
+import ru.barboskin.storeappreview.base.ui.BaseViewHolder
 
 class PagedItem(
     val state: PagedState
@@ -43,7 +45,11 @@ enum class PagedState {
 }
 
 fun BaseAdapter<ListItem>.startLoadMore() {
-    submitList(currentList.map { if (it is PagedItem) PagedItem(PagedState.LOADING) else it })
+    submitList(currentList.map {
+        if (it is PagedItem) PagedItem(
+            PagedState.LOADING
+        ) else it
+    })
 }
 
 fun BaseAdapter<ListItem>.getNewPagedItems(newItems: List<ListItem>): List<ListItem> {

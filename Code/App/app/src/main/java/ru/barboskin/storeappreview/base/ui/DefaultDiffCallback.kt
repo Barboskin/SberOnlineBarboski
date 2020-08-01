@@ -1,6 +1,7 @@
 package ru.barboskin.storeappreview.base.ui
 
 import androidx.recyclerview.widget.DiffUtil
+import ru.barboskin.storeappreview.base.ui.items.ListItem
 
 class DefaultDiffCallback<T : ListItem> : DiffUtil.ItemCallback<T>() {
 
