@@ -42,7 +42,7 @@ fun NetworkModule() = object : NetworkModule {
 
     private val slackBaseUrl: String = "https://hooks.slack.com/"
 
-    private val backendBaseUrl: String = "https://77886b94e8f2.ngrok.io/"
+    private val backendBaseUrl: String = "https://0060288d05a8.ngrok.io/"
 
     private val rxJava2CallAdapterFactory: RxJava2CallAdapterFactory =
         RxJava2CallAdapterFactory.create()
