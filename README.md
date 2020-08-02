@@ -7,4 +7,6 @@
 
 Не успели подключить API сторов, в Code/backend/utils/fill_database.py есть функции, которые унифицируют данные и передают их в БД.
 
-![](demo.gif)
+
+
+<img width="400" alt="portfolio_view" src="demo.gif">
