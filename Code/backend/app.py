@@ -36,6 +36,8 @@ def db_get_commands():
 COLUMNS = ['create_time', 'rate', 'review_title', 'review_text', 'platform']
 INTONATION = ['intonation']
 COMMANDS = [f'command_{i}_estimate' for i in range(1, 44)]
+RETRAIN_THRESHOLD = 500
+ESTIMATE_THRESHOLD = 50
 
 
 def db_add_review(review_data, with_pretrain=False):
@@ -60,7 +62,6 @@ def db_get_random_review_id():
 
 def db_change_review(review_data):
     excluded = ('id', "create_time", "rate", "review_title", "review_text", "platform")
-    print(review_data)
     update_values = ', '.join([f'{k}=%({k})s' for k in review_data if k not in excluded])
     with db_connection() as con:
         con.execute(f"update user_reviews set {update_values} where id=%(id)s", review_data)
@@ -73,8 +74,29 @@ def db_get_review(review_id):
     return review_data
 
 
+def db_increment_error():
+    with db_connection() as con:
+        con.execute(f"update error set error_count = error_count + 1 returning error_count")
+        count = con.fetchone()
+    return count
+
+
+def db_get_last_error():
+    with db_connection() as con:
+        con.execute(f"select last_error from error")
+        count = con.fetchone()
+    return count
+
+
+def db_update_error():
+    with db_connection() as con:
+        con.execute(f"update error set last_error = error_count returning error_count")
+        count = con.fetchone()
+    return count
+
+
 def db_get_reviews_by_command_id(command_id, offset):
-    condition = f"command_{command_id}_estimate > 50"
+    condition = f"command_{command_id}_estimate > {ESTIMATE_THRESHOLD}"
     limit = 50
     with db_connection() as con:
         con.execute("select * from commands order by id")
@@ -94,13 +116,33 @@ def db_get_reviews_by_command_id(command_id, offset):
                     filtered_record[k] = v
             elif k in COMMANDS:
                 command_id = int(k.split('_')[1])
-                if v > 50:
+                if v > ESTIMATE_THRESHOLD:
                     filtered_record["teams"].append(
                         [command for command in commands if command['id'] == command_id][0])
             else:
                 filtered_record[k] = v
         filtered_review_data.append(filtered_record)
     return filtered_review_data
+
+
+def mock_ml_predict(text):
+    # predicted = process_text(text)
+    predicted = {'intonation': bool(randint(0, 1))}
+    predicted.update({f'command_{i}_estimate': randint(0, 100) for i in range(1, 44)})
+    return predicted
+
+
+def mock_ml_retrain():
+    # retraining...
+    pass
+
+
+def maybe_retrain_model():
+    count = int(db_increment_error()['error_count'])
+    last_error = int(db_get_last_error()['last_error'])
+    if count - last_error < RETRAIN_THRESHOLD:
+        mock_ml_retrain()
+        db_update_error()
 
 
 def get_form_data(with_pretrain=False):
@@ -112,6 +154,9 @@ def get_form_data(with_pretrain=False):
         pretrain_data.update({k: request.form.get(k, None) for k in INTONATION})
         pretrain_data['intonation'] = True if pretrain_data.get('intonation', '') == 'True' else False
         review_data.update(pretrain_data)
+    else:
+        predicted_data = mock_ml_predict(review_data['review_text'])
+        review_data.update(predicted_data)
     return review_data
 
 
@@ -190,6 +235,7 @@ def api_change_review():
                 else:
                     review_data[command] = 0
             db_change_review(review_data=review_data)
+
         resp = (jsonify({'error': None}), 200)
     except Exception as e:
         resp = jsonify({'error': str(e)}, 500)
