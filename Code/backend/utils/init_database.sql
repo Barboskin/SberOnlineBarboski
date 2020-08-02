@@ -114,4 +114,6 @@ create table error
 (
     error_count int,
     last_error int
-)
+);
+
+insert into error (error_count, last_error) values (0, 0)

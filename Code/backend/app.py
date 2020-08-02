@@ -133,14 +133,14 @@ def mock_ml_predict(text):
 
 
 def mock_ml_retrain():
-    # retraining...
+    # send_command_to_retraining()
     pass
 
 
 def maybe_retrain_model():
     count = int(db_increment_error()['error_count'])
     last_error = int(db_get_last_error()['last_error'])
-    if count - last_error < RETRAIN_THRESHOLD:
+    if count - last_error >= RETRAIN_THRESHOLD:
         mock_ml_retrain()
         db_update_error()
 
@@ -156,6 +156,7 @@ def get_form_data(with_pretrain=False):
         review_data.update(pretrain_data)
     else:
         predicted_data = mock_ml_predict(review_data['review_text'])
+        print(predicted_data)
         review_data.update(predicted_data)
     return review_data
 
@@ -173,7 +174,7 @@ def create_review():
     if request.method == 'POST':
         if request.form.get('action', '') == action:
             review_data = get_form_data(with_pretrain=with_pretrain)
-            new_review = db_add_review(review_data=review_data, with_pretrain=with_pretrain)
+            new_review = db_add_review(review_data=review_data, with_pretrain=True)
             return redirect(f"/customer_reviews/{new_review['id']}/edit", code=302)
     return render_template('morda.html', action=action, with_pretrain=with_pretrain, commands=commands)
 
@@ -235,7 +236,7 @@ def api_change_review():
                 else:
                     review_data[command] = 0
             db_change_review(review_data=review_data)
-
+            maybe_retrain_model()
         resp = (jsonify({'error': None}), 200)
     except Exception as e:
         resp = jsonify({'error': str(e)}, 500)
