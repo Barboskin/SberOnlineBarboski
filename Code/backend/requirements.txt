@@ -42,7 +42,7 @@ Keras==2.3.1
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.2
 lazy-object-proxy==1.4.3
-lxml==4.5.2
+lxml==4.6.2
 Markdown==3.2.2
 markovify==0.8.2
 MarkupSafe==1.1.1
