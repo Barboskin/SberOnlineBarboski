@@ -29,7 +29,7 @@ hstspreload==2020.7.29
 html-linter==0.4.0
 htmlmin==0.1.12
 httpcore==0.9.1
-httpx==0.13.3
+httpx==0.23.0
 hyperframe==5.2.0
 idna==2.10
 importlib-metadata==1.7.0
