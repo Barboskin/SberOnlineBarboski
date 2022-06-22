@@ -50,7 +50,7 @@ mccabe==0.6.1
 more-itertools==8.4.0
 multidict==4.7.6
 nltk==3.2.5
-numpy==1.18.5
+numpy==1.22.0
 oauthlib==3.1.0
 opt-einsum==3.3.0
 packaging==20.4
